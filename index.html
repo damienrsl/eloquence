@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr">
+<!doctype html><html lang="fr" data-theme="light">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Parler comme dans la vraie vie</title>
@@ -154,7 +154,7 @@ section>.etiquette{display:block;margin:0 4px 10px}
 .carte h2{font-size:22px;letter-spacing:-.02em;line-height:1.15}
 .carte h3{font-size:17px;letter-spacing:-.01em}
 .carte p{margin:8px 0 0}
-.franc{border-left:2px solid var(--pan);padding:14px 16px;margin:6px 0 0;color:var(--texte-2);font-size:14px;border-radius:0 var(--r-m) var(--r-m) 0;background:rgba(255,255,255,.03)}
+.franc{border-left:2px solid var(--pan);padding:14px 16px;margin:6px 0 0;color:var(--texte-2);font-size:14px;border-radius:0 var(--r-m) var(--r-m) 0;background:rgba(7,8,11,.035)}
 .franc b{color:var(--texte)}
 /* checklist */
 .pas{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--filet);cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -184,7 +184,7 @@ section>.etiquette{display:block;margin:0 4px 10px}
 .critere b{font-size:15px}
 .critere small{display:block;color:var(--texte-3);font-size:13px;margin-top:2px}
 .notes{display:flex;gap:8px;margin-top:10px}
-.notes button{flex:1;font:500 13px var(--police);color:var(--texte-2);background:rgba(255,255,255,.05);border:1px solid var(--filet);border-radius:999px;padding:9px 0;cursor:pointer;transition:all .3s var(--ressort)}
+.notes button{flex:1;font:500 13px var(--police);color:var(--texte-2);background:rgba(7,8,11,.04);border:1px solid var(--filet);border-radius:999px;padding:9px 0;cursor:pointer;transition:all .3s var(--ressort)}
 .notes button.choisi{color:#fff;border-color:transparent;background:linear-gradient(135deg,var(--pan),var(--pan-2));box-shadow:0 0 20px color-mix(in srgb,var(--pan) 35%,transparent)}
 .stats{display:flex;gap:10px;margin-top:4px}
 .stat{flex:1;padding:14px}
@@ -192,7 +192,7 @@ section>.etiquette{display:block;margin:0 4px 10px}
 .barres{margin-top:14px}
 .barre{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:13px}
 .barre span{width:96px;color:var(--texte-2)}
-.barre i{flex:1;height:6px;border-radius:9px;background:rgba(255,255,255,.07);position:relative;overflow:hidden}
+.barre i{flex:1;height:6px;border-radius:9px;background:rgba(7,8,11,.08);position:relative;overflow:hidden}
 .barre i::after{content:"";position:absolute;inset:0;width:var(--v,0%);border-radius:9px;background:linear-gradient(90deg,var(--pan-2),var(--pan));transition:width .8s var(--ressort)}
 .barre.faible span{color:var(--texte)}
 .vide{color:var(--texte-3);font-size:14px}
@@ -210,7 +210,7 @@ details[open] summary .plus{transform:rotate(225deg)}
 .regle .loi .orbe{--d:8px;margin-top:8px}
 .regle .loi div{flex:1}
 .regle .loi b{display:block}
-.mythe{font-size:14px;color:var(--texte-2);padding:12px 14px;border-radius:var(--r-m);background:rgba(255,255,255,.035);border:1px solid var(--filet);margin-bottom:14px}
+.mythe{font-size:14px;color:var(--texte-2);padding:12px 14px;border-radius:var(--r-m);background:rgba(7,8,11,.035);border:1px solid var(--filet);margin-bottom:14px}
 .mythe b{color:var(--texte)}
 .src{font:400 11.5px/1.5 var(--police-mono);color:var(--texte-3)}
 /* jeu */
@@ -224,12 +224,15 @@ details[open] summary .plus{transform:rotate(225deg)}
 .choix .bouton[disabled]{opacity:.35}
 .choix .bouton.bon{opacity:1;outline:1.5px solid var(--pan-3);outline-offset:2px}
 .prog{display:flex;gap:6px;margin-top:16px}
-.prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.08)}
+.prog i{flex:1;height:3px;border-radius:3px;background:rgba(7,8,11,.08)}
 .prog i.ok{background:var(--pan)}
-.prog i.ko{background:rgba(255,255,255,.3)}
+.prog i.ko{background:rgba(7,8,11,.3)}
 @keyframes monte{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);opacity:0;padding:12px 18px;border-radius:999px;font-size:14px;transition:all .45s var(--ressort);z-index:200;pointer-events:none;white-space:nowrap}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+.bouton.verre-btn{background:#fff!important;border-color:rgba(7,8,11,.12)!important}
+.verre{box-shadow:inset 0 1px 0 var(--reflet),0 10px 34px rgba(15,18,30,.10)}
+body.brume::after{mix-blend-mode:multiply;opacity:.06}
 footer{margin:40px 4px 0;color:var(--texte-3);font-size:12px}
 </style>
 <body class="brume" data-pan="contenu">
