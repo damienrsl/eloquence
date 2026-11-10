@@ -1,0 +1,589 @@
+<!doctype html><html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Parler comme dans la vraie vie</title>
+<style>
+/* ──────────────────────────────────────────────────────────────────────────────
+   Brume · le kit ARTEFACTS (06/11/2026). À coller en tête de toute page publiée en artefact.
+   Pourquoi : retour de Damien du 06/11 : « l'Encart, je l'ai validé ; les artefacts, c'est beau mais c'est blanc.
+   Plus de grain, plus de texture, cohérent avec la taskbar. »
+   Ce qui change par rapport à tokens.css :
+     1. TOUJOURS sombre. Plus de bascule en clair quand l'appareil est en clair (c'était la cause du blanc).
+        Le clair n'existe que si on le force : <html data-theme="light">, et seulement sur sa demande.
+     2. Le grain se VOIT : 14 % sur le fond (au lieu de 5 %), 10 % dans le verre, 30 % dans les orbes (comme l'île).
+     3. Le fond reprend l'île : nuit #070A12 + nappe bleu nuit permanente en bas + halo du pan + vignette.
+   Pan de la page : <body data-pan="contenu|perso|business|marque">. Une seule teinte vive par page.
+   ────────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: dark;
+  --encre: #000000;
+  --fond: #070A12;
+  --nappe: #1C3370;             /* le bleu nuit permanent du bas de l'île */
+  --surface: #0F131C;
+  --surface-haute: #161B26;
+  --filet: rgba(255, 255, 255, 0.08);
+  --reflet: rgba(255, 255, 255, 0.14);
+  --texte: #F4F5F7;
+  --texte-2: rgba(244, 245, 247, 0.62);
+  --texte-3: rgba(244, 245, 247, 0.38);
+
+  --contenu: #FF4D1F;  --contenu-2: #FF2D55;  --contenu-3: #FFB347;
+  --perso: #F0628E;    --perso-2: #8E1F4F;    --perso-3: #FFC4D6;
+  --business: #2F6BFF; --business-2: #0B2A8F; --business-3: #7CC0FF;
+  --marque: #8B5CF6;   --marque-2: #4C1D95;   --marque-3: #E3A6FF;
+  --pan: var(--business); --pan-2: var(--business-2); --pan-3: var(--business-3);
+
+  --verre: rgba(18, 23, 36, 0.72);
+  --verre-dense: rgba(10, 14, 23, 0.9);
+  --verre-flou: blur(30px) saturate(160%);
+
+  /* Le grain : un bruit monochrome en incrustation. C'est lui qui fait « photo », pas plastique. */
+  --bruit: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.7' intercept='-.2'/%3E%3CfeFuncG type='linear' slope='1.7' intercept='-.2'/%3E%3CfeFuncB type='linear' slope='1.7' intercept='-.2'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-fond: 0.11;   /* fondu normal : sur la nuit, l'incrustation ne se voit pas */
+  --grain-verre: 0.07;
+  --grain-orbe: 0.55;
+
+  --r-s: 10px; --r-m: 14px; --r-l: 20px; --r-xl: 28px; --r-pilule: 999px;
+  --police: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", system-ui, sans-serif;
+  --police-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --suivi: 0.08em;
+  --ombre: 0 18px 60px rgba(0, 0, 0, 0.55);
+  --ressort: cubic-bezier(.32, .72, .25, 1);
+}
+[data-pan="contenu"]  { --pan: var(--contenu);  --pan-2: var(--contenu-2);  --pan-3: var(--contenu-3); }
+[data-pan="perso"]    { --pan: var(--perso);    --pan-2: var(--perso-2);    --pan-3: var(--perso-3); }
+[data-pan="business"] { --pan: var(--business); --pan-2: var(--business-2); --pan-3: var(--business-3); }
+[data-pan="marque"]   { --pan: var(--marque);   --pan-2: var(--marque-2);   --pan-3: var(--marque-3); }
+
+/* Le fond : nuit, nappe bleue en bas, halo du pan en haut à droite, son profond en bas à gauche, vignette, grain. */
+html, body { background: var(--fond); color: var(--texte); }
+body.brume {
+  font: 15px/1.55 var(--police);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+  background:
+    radial-gradient(70% 55% at 50% 115%, color-mix(in srgb, var(--nappe) 60%, transparent), transparent 70%),
+    radial-gradient(55% 45% at 92% -5%, color-mix(in srgb, var(--pan) 34%, transparent), transparent 70%),
+    radial-gradient(45% 40% at -5% 75%, color-mix(in srgb, var(--pan-2) 30%, transparent), transparent 70%),
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
+    var(--fond);
+  background-attachment: fixed;
+  transition: background 0.4s var(--ressort);
+}
+body.brume::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100;
+  background-image: var(--bruit); background-size: 220px;
+  opacity: var(--grain-fond); mix-blend-mode: soft-light;
+}
+
+/* Le verre : fond dense, halo du pan au bas de la carte, grain dedans, reflet en haut. */
+.verre {
+  position: relative; isolation: isolate; overflow: hidden;
+  background:
+    radial-gradient(90% 70% at 85% 120%, color-mix(in srgb, var(--pan) 22%, transparent), transparent 70%),
+    var(--verre-dense);
+  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
+  border: 1px solid var(--filet);
+  border-radius: var(--r-l);
+  box-shadow: inset 0 1px 0 var(--reflet), var(--ombre);
+}
+.verre::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: var(--bruit); background-size: 220px; opacity: var(--grain-verre); mix-blend-mode: screen;
+}
+.verre.calme { background: var(--verre-dense); }   /* sans halo : une carte d'info */
+
+/* L'orbe : la seule façon de mettre de la couleur. Sphère du dégradé, grainée, reflet, lueur. */
+.orbe {
+  --d: 12px;
+  position: relative; display: inline-block; flex: none; width: var(--d); height: var(--d); border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, var(--pan-3), var(--pan) 48%, var(--pan-2) 100%);
+  box-shadow: 0 0 calc(var(--d) * 0.9) color-mix(in srgb, var(--pan) 45%, transparent);
+  overflow: hidden; vertical-align: middle;
+}
+.orbe::before { /* grain */
+  content: ""; position: absolute; inset: 0; background-image: var(--bruit); background-size: 160px;
+  opacity: var(--grain-orbe); mix-blend-mode: soft-light;
+}
+.orbe::after { /* reflet */
+  content: ""; position: absolute; width: 40%; height: 26%; left: 20%; top: 14%; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55); filter: blur(calc(var(--d) * 0.05));
+}
+.orbe[data-etat="bloque"] { --d: 15px; box-shadow: 0 0 calc(var(--d) * 1.2) color-mix(in srgb, var(--pan) 80%, transparent); }
+.orbe[data-etat="attend"] { --d: 9px; opacity: .7; box-shadow: none; }
+.orbe[data-etat="travaille"] { animation: souffle 4s ease-in-out infinite; }
+.orbe[data-etat="fait"] { opacity: .35; filter: saturate(.4); }
+@keyframes souffle { 50% { transform: scale(1.14); filter: brightness(1.15); } }
+
+/* Texte */
+.etiquette { font: 500 10.5px/1.4 var(--police-mono); letter-spacing: var(--suivi); text-transform: uppercase; color: var(--texte-3); }
+.titre { font-weight: 600; letter-spacing: -0.02em; text-wrap: balance; }
+.second { color: var(--texte-2); }
+
+/* Boutons : pilule lumineuse du pan (principal), verre (secondaire). Aucun picto. */
+.bouton {
+  font: 600 14px/1 var(--police); color: #fff; padding: 12px 20px; border-radius: var(--r-pilule); border: 0; cursor: pointer;
+  background: linear-gradient(135deg, var(--pan), var(--pan-2));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 0 32px color-mix(in srgb, var(--pan) 40%, transparent);
+  transition: transform .22s var(--ressort);
+}
+.bouton.verre-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--filet); box-shadow: inset 0 1px 0 var(--reflet); color: var(--texte); }
+.bouton:hover { transform: scale(1.03); } .bouton:active { transform: scale(0.96); }
+.bouton:focus-visible { outline: 2px solid var(--pan-3); outline-offset: 3px; }
+
+/* Le clair, seulement s'il est demandé (data-theme="light") : papier froid, grain gardé. */
+:root[data-theme="light"] {
+  color-scheme: light; --fond: #EEF0F4; --nappe: #C9D6F2; --texte: #0B0C10; --texte-2: rgba(11,12,16,.62); --texte-3: rgba(11,12,16,.4);
+  --filet: rgba(7,8,11,.08); --reflet: rgba(255,255,255,.9); --verre-dense: rgba(255,255,255,.82); --grain-fond: .10; --ombre: 0 18px 50px rgba(15,18,30,.14);
+}
+
+@media (prefers-reduced-motion: reduce) { .orbe, .bouton { animation: none !important; transition: none !important; } }
+
+*{box-sizing:border-box}
+body{margin:0;padding:0 16px 80px}
+main{max-width:640px;margin:0 auto}
+h1,h2,h3{margin:0}
+.hero{padding:56px 4px 28px;position:relative}
+.hero .orbe{--d:64px;position:absolute;right:6px;top:40px;animation:souffle 6s ease-in-out infinite}
+.hero h1{font-size:34px;line-height:1.08;letter-spacing:-.03em;max-width:13ch}
+.hero p{margin:14px 0 0;font-size:16px;max-width:34ch}
+section{margin:30px 0}
+section>.etiquette{display:block;margin:0 4px 10px}
+.carte{padding:20px;margin-bottom:12px}
+.carte h2{font-size:22px;letter-spacing:-.02em;line-height:1.15}
+.carte h3{font-size:17px;letter-spacing:-.01em}
+.carte p{margin:8px 0 0}
+.franc{border-left:2px solid var(--pan);padding:14px 16px;margin:6px 0 0;color:var(--texte-2);font-size:14px;border-radius:0 var(--r-m) var(--r-m) 0;background:rgba(255,255,255,.03)}
+.franc b{color:var(--texte)}
+/* checklist */
+.pas{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--filet);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pas:first-of-type{border-top:0}
+.pas .rond{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--texte-3);flex:none;margin-top:2px;transition:all .35s var(--ressort);position:relative}
+.pas.fait .rond{border-color:transparent;background:radial-gradient(circle at 34% 30%,var(--pan-3),var(--pan) 48%,var(--pan-2));box-shadow:0 0 16px color-mix(in srgb,var(--pan) 50%,transparent);transform:scale(1.08)}
+.pas.fait .txt{opacity:.5}
+.pas b{display:block;font-size:15px}
+.pas span{color:var(--texte-2);font-size:14px}
+.minuteur{font:600 13px var(--police-mono);color:var(--pan-3);margin-top:6px;display:inline-block}
+/* coach */
+.defi-crit{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.defi h2{font-size:24px}
+.consigne{font-size:16px;margin-top:10px;color:var(--texte)}
+.astuce{font-size:14px;color:var(--texte-2);margin-top:10px}
+.rangee{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.ecran{margin-top:16px;border-radius:var(--r-l);overflow:hidden;background:#000;position:relative;aspect-ratio:9/16;max-height:62vh;display:none;border:1px solid var(--filet)}
+.ecran.on{display:block}
+.ecran video{width:100%;height:100%;object-fit:cover}
+.ecran video.miroir{transform:scaleX(-1)}
+.chrono{position:absolute;left:12px;top:12px;font:600 14px var(--police-mono);padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.5);display:flex;gap:8px;align-items:center}
+.chrono .orbe{--d:10px;animation:souffle 1.2s ease-in-out infinite}
+.repere{position:absolute;left:50%;top:10px;transform:translateX(-50%);font:500 11px var(--police-mono);letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.75);background:rgba(0,0,0,.45);padding:5px 10px;border-radius:999px}
+.grille{display:none;margin-top:18px}
+.grille.on{display:block}
+.critere{padding:12px 0;border-top:1px solid var(--filet)}
+.critere b{font-size:15px}
+.critere small{display:block;color:var(--texte-3);font-size:13px;margin-top:2px}
+.notes{display:flex;gap:8px;margin-top:10px}
+.notes button{flex:1;font:500 13px var(--police);color:var(--texte-2);background:rgba(255,255,255,.05);border:1px solid var(--filet);border-radius:999px;padding:9px 0;cursor:pointer;transition:all .3s var(--ressort)}
+.notes button.choisi{color:#fff;border-color:transparent;background:linear-gradient(135deg,var(--pan),var(--pan-2));box-shadow:0 0 20px color-mix(in srgb,var(--pan) 35%,transparent)}
+.stats{display:flex;gap:10px;margin-top:4px}
+.stat{flex:1;padding:14px}
+.stat .n{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.barres{margin-top:14px}
+.barre{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:13px}
+.barre span{width:96px;color:var(--texte-2)}
+.barre i{flex:1;height:6px;border-radius:9px;background:rgba(255,255,255,.07);position:relative;overflow:hidden}
+.barre i::after{content:"";position:absolute;inset:0;width:var(--v,0%);border-radius:9px;background:linear-gradient(90deg,var(--pan-2),var(--pan));transition:width .8s var(--ressort)}
+.barre.faible span{color:var(--texte)}
+.vide{color:var(--texte-3);font-size:14px}
+/* guide */
+details{border-top:1px solid var(--filet)}
+details:first-of-type{border-top:0}
+summary{list-style:none;cursor:pointer;padding:16px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary h3{font-size:18px}
+summary .plus{width:10px;height:10px;border-right:1.5px solid var(--texte-3);border-bottom:1.5px solid var(--texte-3);transform:rotate(45deg);transition:transform .35s var(--ressort);flex:none;margin-right:4px}
+details[open] summary .plus{transform:rotate(225deg)}
+.regle{padding:0 0 14px}
+.regle p{margin:0 0 12px}
+.regle .loi{display:flex;gap:12px;margin:0 0 12px}
+.regle .loi .orbe{--d:8px;margin-top:8px}
+.regle .loi div{flex:1}
+.regle .loi b{display:block}
+.mythe{font-size:14px;color:var(--texte-2);padding:12px 14px;border-radius:var(--r-m);background:rgba(255,255,255,.035);border:1px solid var(--filet);margin-bottom:14px}
+.mythe b{color:var(--texte)}
+.src{font:400 11.5px/1.5 var(--police-mono);color:var(--texte-3)}
+/* jeu */
+.jeu-carte{min-height:150px}
+.jeu-carte .aff{font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.3;margin-top:8px}
+.jeu-carte .exp{margin-top:14px;font-size:14px;color:var(--texte-2);display:none}
+.jeu-carte .exp.on{display:block;animation:monte .5s var(--ressort)}
+.verdict{font-weight:600;color:var(--texte)}
+.choix{display:flex;gap:10px;margin-top:16px}
+.choix .bouton{flex:1}
+.choix .bouton[disabled]{opacity:.35}
+.choix .bouton.bon{opacity:1;outline:1.5px solid var(--pan-3);outline-offset:2px}
+.prog{display:flex;gap:6px;margin-top:16px}
+.prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.08)}
+.prog i.ok{background:var(--pan)}
+.prog i.ko{background:rgba(255,255,255,.3)}
+@keyframes monte{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);opacity:0;padding:12px 18px;border-radius:999px;font-size:14px;transition:all .45s var(--ressort);z-index:200;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+footer{margin:40px 4px 0;color:var(--texte-3);font-size:12px}
+</style>
+<body class="brume" data-pan="contenu">
+<main>
+
+<header class="hero">
+  <span class="orbe"></span>
+  <span class="etiquette">Guide de l'éloquence · v1</span>
+  <h1 class="titre">Parler devant l'objectif comme tu parles à table.</h1>
+  <p class="second">Tu parles bien. La caméra te retire une seule chose : les visages qui réagissent. Ici, on la remet, et on s'entraîne 2 minutes par jour.</p>
+  <div class="franc"><b>Franchement, avant de commencer.</b> Tes chiffres de la série hiver disent : les essais accrochent, les publics chutent. Le stress n'explique peut-être pas tout ; la structure de la vidéo compte aussi. Ce guide travaille ta voix, ton regard et ton corps. La structure se juge dans Viralité.</div>
+</header>
+
+<!-- 1. AVANT DE TOURNER -->
+<section>
+  <span class="etiquette">1 · Avant de tourner · 2 minutes</span>
+  <div class="verre carte" id="avant">
+    <div class="pas" data-i="0"><i class="rond"></i><div class="txt"><b>3 soupirs physiologiques</b><span>Deux inspirations par le nez, la 2e courte par-dessus la 1re, puis une longue expiration par la bouche. La voie la plus rapide vers le calme.</span><br><span class="minuteur" data-sec="30">Lancer 30 s</span></div></div>
+    <div class="pas" data-i="1"><i class="rond"></i><div class="txt"><b>Dis à voix haute : « Je suis excité »</b><span>Pas « calme-toi ». Ton cœur bat déjà vite : renomme-le en énergie au lieu de le combattre.</span></div></div>
+    <div class="pas" data-i="2"><i class="rond"></i><div class="txt"><b>Choisis UNE personne derrière l'objectif</b><span>Un pote précis, avec un prénom. Tu ne parles pas à 50 000 personnes : tu parles à lui, une fois de plus.</span></div></div>
+    <div class="pas" data-i="3"><i class="rond"></i><div class="txt"><b>Chauffe la voix 20 secondes</b><span>Une sirène grave vers aigu, puis ta 1re phrase dite exagérée, comme un comédien. Le vrai essai sera au-dessus de ta voix froide.</span></div></div>
+    <div class="pas" data-i="4"><i class="rond"></i><div class="txt"><b>Ta 1re phrase, dite 3 fois avant de filmer</b><span>Chuchotée, presque criée, puis normale. Le début est le moment où le stress parle le plus fort : il doit être automatique.</span></div></div>
+    <div class="pas" data-i="5"><i class="rond"></i><div class="txt"><b>Pieds ancrés, mains visibles, pouce sous l'objectif</b><span>Le haut de ton téléphone à hauteur des yeux. Tu ne lis pas l'écran : tu regardes la petite lentille.</span></div></div>
+  </div>
+</section>
+
+<!-- 2. LE COACH -->
+<section>
+  <span class="etiquette">2 · Ton coach · un défi par jour</span>
+  <div class="verre carte defi" id="coach">
+    <div class="defi-crit"><span class="orbe"></span><span class="etiquette" id="d-crit">—</span></div>
+    <h2 class="titre" id="d-titre">—</h2>
+    <p class="consigne" id="d-consigne"></p>
+    <p class="astuce" id="d-pourquoi"></p>
+    <div class="rangee">
+      <button class="bouton" id="b-filmer">Me filmer</button>
+      <button class="bouton verre-btn" id="b-autre">Un autre défi</button>
+    </div>
+    <div class="ecran" id="ecran">
+      <video id="vid" playsinline muted autoplay class="miroir"></video>
+      <div class="repere" id="repere">Regarde la lentille, pas toi</div>
+      <div class="chrono" id="chrono" style="display:none"><span class="orbe"></span><span id="t">0:00</span></div>
+    </div>
+    <div class="rangee" id="r-rec" style="display:none">
+      <button class="bouton" id="b-stop">J'ai fini</button>
+    </div>
+    <div class="rangee" id="r-revoir" style="display:none">
+      <button class="bouton verre-btn" id="b-garder">Garder la vidéo</button>
+      <button class="bouton verre-btn" id="b-refaire">Refaire</button>
+    </div>
+    <div class="grille" id="grille">
+      <p class="second" style="margin:0 0 6px">Revois-toi une fois, le son coupé, puis une fois les yeux fermés. Note honnêtement.</p>
+      <div id="criteres"></div>
+      <div class="rangee"><button class="bouton" id="b-noter">Enregistrer ma séance</button></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="verre calme stat"><div class="etiquette">Séances</div><div class="n" id="s-n">0</div></div>
+    <div class="verre calme stat"><div class="etiquette">Jours d'affilée</div><div class="n" id="s-serie">0</div></div>
+  </div>
+  <div class="verre calme carte" style="margin-top:10px">
+    <div class="etiquette">Où tu en es · moyenne des 5 dernières</div>
+    <div class="barres" id="barres"></div>
+    <div class="rangee"><button class="bouton verre-btn" id="b-copier">Copier mon bilan pour Claude</button></div>
+  </div>
+</section>
+
+<!-- 3. LE GUIDE -->
+<section>
+  <span class="etiquette">3 · Le guide · ouvre une partie à la fois</span>
+  <div class="verre calme carte" style="padding-top:4px;padding-bottom:4px">
+
+  <details>
+    <summary><h3>Pourquoi tu es meilleur à table</h3><i class="plus"></i></summary>
+    <div class="regle">
+      <p>À table, chaque phrase reçoit une réponse : un sourire, un « ah ouais ? ». Ton cerveau s'en nourrit et ajuste le rythme. Devant l'objectif, ce retour disparaît, et la voix retombe à plat.</p>
+      <div class="loi"><span class="orbe"></span><div><b>Remets un humain</b>Filme en interview : quelqu'un hors champ te pose la question, tu réponds. Tu passes en mode conversation, celui où tu es déjà bon.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Ton stress se voit moins que tu crois</b>On surestime fortement ce que les autres perçoivent de notre nervosité. Juste le savoir rend les orateurs meilleurs, selon une étude.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>La caméra écrase l'énergie</b>Ce qui te paraît « un peu trop » en tournant sort souvent juste à l'écran. Vise 7 sur 10, pas 5.</div></div>
+      <p class="src">Gilovich et al. 2000 (effet projecteur) · Savitsky &amp; Gilovich 2003 (illusion de transparence) · le 7 sur 10 = pratique de plateau, pas une étude.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><h3>Le regard</h3><i class="plus"></i></summary>
+    <div class="regle">
+      <div class="loi"><span class="orbe"></span><div><b>En vidéo : la lentille, pas l'écran</b>Regarder ton image à l'écran = regarder à côté des yeux du spectateur. La lentille = le regarder lui.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Regarder ailleurs pour penser, c'est normal</b>Détourner les yeux quand on cherche une idée aide le cerveau à réfléchir. Reviens dans l'objectif pour la phrase importante : c'est ce retour qui frappe.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Face à quelqu'un : plus quand tu écoutes</b>On regarde naturellement davantage la personne quand elle parle que quand on parle soi-même. Ne la fixe pas en continu : finis tes phrases importantes dans ses yeux.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Face à une salle : une personne par idée</b>Une phrase entière à un visage, puis un autre. Pas de balayage rapide comme un phare.</div></div>
+      <p class="src">Glenberg et al. 1998 (détourner le regard aide à penser) · Kendon 1967, Argyle (regard écoute / parole).</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><h3>La voix</h3><i class="plus"></i></summary>
+    <div class="regle">
+      <div class="loi"><span class="orbe"></span><div><b>Les silences, pas les « euh »</b>Une pause d'une seconde après une idée forte la fait atterrir. Le stress pousse à remplir : tais-toi à la place.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Fais varier hauteur et vitesse</b>Les voix perçues comme charismatiques bougent plus en hauteur et en rythme. Accélère sur le contexte, ralentis sur ce qui compte.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Finis en descendant</b>Une phrase qui monte à la fin sonne comme une question, donc comme un doute. Pose le point final avec la voix.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Un mot appuyé par phrase</b>Pas tous. Celui qui porte le sens : « ce manteau tient <i>dix</i> ans ».</div></div>
+      <div class="mythe"><b>Mythe :</b> « 7 % les mots, 38 % la voix, 55 % le corps ». L'étude de Mehrabian portait sur des mots isolés exprimant une émotion contradictoire avec le ton. Hors de ce cadre, le chiffre ne veut rien dire : ce que tu dis compte énormément.</div>
+      <p class="src">Rosenberg &amp; Hirschberg 2009, Niebuhr (acoustique du charisme) · Mehrabian &amp; Wiener 1967.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><h3>Le corps</h3><i class="plus"></i></summary>
+    <div class="regle">
+      <div class="loi"><span class="orbe"></span><div><b>Garde tes mains, ne les cache pas</b>Gesticuler aide à trouver ses mots : empêcher les gestes augmente les hésitations. En vertical, garde-les entre la poitrine et le menton pour qu'elles restent dans le cadre.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Ancre-toi</b>Les deux pieds au sol, poids réparti. Le balancement trahit le stress plus que le visage.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Bouge avec une raison</b>Un pas ou un mouvement de tête = une nouvelle idée. Bouger sans raison = bruit.</div></div>
+      <div class="mythe"><b>Mythe :</b> la « posture de pouvoir » 2 minutes avant pour changer tes hormones. L'effet sur les hormones ne s'est pas reproduit, et une des autrices a pris ses distances. Il reste au mieux un petit effet sur le ressenti.</div>
+      <p class="src">Rauscher, Krauss &amp; Chen 1996 · Goldin-Meadow et al. 2001 · Carney et al. 2010, Ranehill et al. 2015.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><h3>Le stress</h3><i class="plus"></i></summary>
+    <div class="regle">
+      <div class="loi"><span class="orbe"></span><div><b>Renomme, ne combats pas</b>Dire « je suis excité » avant de parler en public a donné de meilleurs discours que « je suis calme ». Le corps est le même, l'histoire qu'on se raconte change.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Le soupir physiologique</b>5 minutes par jour de cette respiration ont mieux fait baisser l'anxiété que la méditation dans une étude de Stanford. 3 soupirs avant de filmer suffisent à couper le pic.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Le volume tue la peur</b>Le stress vient de chaque prise qui « compte ». Filme 10 prises jetables par semaine : la caméra devient un objet banal.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Automatise le début</b>Les 5 premières secondes concentrent la peur. Ta 1re phrase doit sortir sans réfléchir ; la suite coule.</div></div>
+      <p class="src">Brooks 2014 (Journal of Experimental Psychology) · Balban et al. 2023 (Cell Reports Medicine) · volume = pratique, pas une étude.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><h3>Parler à une personne</h3><i class="plus"></i></summary>
+    <div class="regle">
+      <div class="loi"><span class="orbe"></span><div><b>Pose la question de relance</b>Les gens qui posent plus de questions, surtout des relances sur ce que l'autre vient de dire, sont jugés plus sympathiques.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Reformule avant d'argumenter</b>« Si je comprends bien, ton problème c'est… ». Quelqu'un qui se sent compris baisse sa garde.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Son prénom, une fois</b>Pas à chaque phrase : ça sonne vendeur.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Parle moins que lui</b>Dans une conversation qui doit convaincre (une marque, un fournisseur), c'est l'autre qui te donne les arguments à lui renvoyer.</div></div>
+      <p class="src">Huang et al. 2017 (Journal of Personality and Social Psychology) · reformulation = pratique de négociation.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><h3>Convaincre une salle ou un écran</h3><i class="plus"></i></summary>
+    <div class="regle">
+      <div class="loi"><span class="orbe"></span><div><b>Une idée par prise de parole</b>Si on ne peut pas résumer ta vidéo en une phrase, le public ne retiendra rien.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>L'exemple avant l'idée</b>Une histoire concrète embarque le public, qui contre-argumente moins pendant qu'il est dedans. « J'ai porté ce manteau 3 hivers » avant « il est solide ».</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Donne un « parce que »</b>Une demande avec une raison passe beaucoup mieux, même quand la raison est mince. Ne demande jamais rien sans le pourquoi.</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Crédibilité, émotion, logique</b>Dans cet ordre : pourquoi toi (tu l'as porté), ce que ça fait (le froid, le regard des autres), puis les faits (prix, matière).</div></div>
+      <div class="loi"><span class="orbe"></span><div><b>Annonce, dis, rappelle</b>À l'oral, le public ne peut pas relire. La phrase clé revient au début et à la fin.</div></div>
+      <p class="src">Green &amp; Brock 2000 (transport narratif) · Langer et al. 1978 (« parce que ») · Aristote, Rhétorique (ethos, pathos, logos).</p>
+    </div>
+  </details>
+
+  </div>
+</section>
+
+<!-- 4. JEU -->
+<section>
+  <span class="etiquette">4 · Le jeu · mythe ou prouvé ?</span>
+  <div class="verre carte jeu-carte" id="jeu">
+    <div class="etiquette" id="j-num">1 / 8</div>
+    <div class="aff" id="j-aff"></div>
+    <div class="choix" id="j-choix">
+      <button class="bouton verre-btn" data-r="prouve">Prouvé</button>
+      <button class="bouton verre-btn" data-r="mythe">Mythe</button>
+    </div>
+    <div class="exp" id="j-exp"></div>
+    <div class="prog" id="j-prog"></div>
+  </div>
+</section>
+
+<footer>Les faits ont une source sous chaque partie ; ce qui vient de la pratique est marqué comme tel. Tes séances restent sur ton téléphone, rien n'est envoyé.</footer>
+</main>
+<div class="toast verre" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const CLE="eloquence-v1";
+const etat=Object.assign({avant:[],seances:[],jour:null,defi:null,jeu:{}},JSON.parse(localStorage.getItem(CLE)||"{}"));
+const sauver=()=>localStorage.setItem(CLE,JSON.stringify(etat));
+const auj=()=>new Date().toISOString().slice(0,10);
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),2200)}
+
+/* 1. checklist, remise à zéro chaque jour */
+if(etat.jour!==auj()){etat.avant=[];etat.jour=auj();etat.defi=null;sauver()}
+document.querySelectorAll(".pas").forEach(p=>{
+  const i=+p.dataset.i; if(etat.avant.includes(i))p.classList.add("fait");
+  p.addEventListener("click",e=>{
+    if(e.target.classList.contains("minuteur"))return;
+    p.classList.toggle("fait");
+    etat.avant=[...document.querySelectorAll(".pas.fait")].map(x=>+x.dataset.i);sauver();
+    if(etat.avant.length===6)toast("Prêt. Tu peux tourner.");
+  });
+});
+document.querySelectorAll(".minuteur").forEach(m=>m.addEventListener("click",()=>{
+  if(m._iv)return;let s=+m.dataset.sec;const lab=["Inspire, inspire encore","Expire longuement"];
+  m._iv=setInterval(()=>{s--;const c=(30-s)%10;m.textContent=s+" s · "+(c<3?lab[0]:lab[1]);
+    if(s<=0){clearInterval(m._iv);m._iv=null;m.textContent="Fait. Relancer 30 s";m.closest(".pas").classList.add("fait");etat.avant=[...document.querySelectorAll(".pas.fait")].map(x=>+x.dataset.i);sauver()}},1000);
+}));
+
+/* 2. le coach */
+const CRIT={
+  regard:{nom:"Regard",aide:"Tu regardais la lentille, pas ton image"},
+  attaque:{nom:"Attaque",aide:"1re phrase directe, sans « alors », « donc », « salut »"},
+  pauses:{nom:"Pauses",aide:"Des silences assumés à la place des « euh »"},
+  energie:{nom:"Énergie",aide:"La voix monte et descend, un mot appuyé par phrase"},
+  fin:{nom:"Fin",aide:"Dernière phrase qui descend et s'arrête net"}
+};
+const DEFIS=[
+ {c:"regard",t:"Le pote derrière la lentille",s:45,x:"Raconte ta dernière trouvaille (une pièce, un resto) à un pote précis, comme s'il était dans la lentille. Tu as le droit de regarder ailleurs pour réfléchir, jamais ton image.",p:"Ton image à l'écran attire tes yeux comme un aimant : c'est elle qui te fait regarder « à côté » du spectateur."},
+ {c:"regard",t:"Penser à côté, conclure en face",s:45,x:"Explique pourquoi tu aimes une marque. Quand tu cherches tes mots, regarde sur le côté. Pour la phrase clé, reviens dans la lentille et tiens 1 seconde.",p:"Le retour du regard sur la phrase importante, c'est ce qui donne l'impression que tu parles à quelqu'un."},
+ {c:"attaque",t:"Zéro élan",s:40,x:"Commence 5 vidéos imaginaires, une phrase chacune, enchaînées. Chacune démarre direct sur le sujet. Interdit : alors, donc, en fait, salut, bon.",p:"Les mots d'élan sont le stress qui prend son souffle. Le spectateur, lui, est déjà parti."},
+ {c:"attaque",t:"La 1re phrase en trois voix",s:30,x:"Ta prochaine 1re phrase de vidéo : chuchotée, puis presque criée, puis normale. Garde la normale.",p:"Après les deux extrêmes, la version normale sort avec plus d'énergie et sans réfléchir."},
+ {c:"pauses",t:"Le point final",s:40,x:"Dis 3 phrases sur un produit que tu portes. Après chacune, 1 seconde de silence en regardant la lentille.",p:"Une seconde paraît longue en tournant ; à l'écran, elle donne du poids. On coupe au montage si besoin, pas l'inverse."},
+ {c:"pauses",t:"Le « euh » devient silence",s:45,x:"Parle 45 secondes de ta journée. Chaque fois qu'un « euh » arrive, ferme la bouche et attends la suite.",p:"Le silence à la place du « euh » fait passer de « hésitant » à « posé »."},
+ {c:"energie",t:"3, 10, puis 7",s:60,x:"La même anecdote 3 fois : à 3 sur 10 d'énergie, à 10 sur 10 (ridicule exprès), puis à 7. Garde la 7.",p:"La caméra écrase l'énergie. Le 10 sur 10 te montre où est la limite ; le 7 sort naturel à l'écran."},
+ {c:"energie",t:"Un mot appuyé par phrase",s:40,x:"Décris ta pièce préférée en 4 phrases. Dans chacune, appuie un seul mot : le chiffre, la matière ou l'émotion.",p:"Appuyer tout = n'appuyer rien. Un mot par phrase guide l'oreille."},
+ {c:"fin",t:"La descente",s:40,x:"4 affirmations sur un sujet que tu connais. Chacune finit en descendant, comme un point, pas comme une question.",p:"Une fin qui monte sonne comme un doute. Une fin qui descend sonne comme une conviction."},
+ {c:"fin",t:"La phrase de sortie",s:30,x:"Finis une vidéo imaginaire en une phrase, puis tais-toi et reste 2 secondes dans la lentille sans sourire gêné.",p:"La plupart des fins s'effilochent (« voilà, euh, voilà »). Une fin nette se partage mieux."},
+ {c:"regard",t:"L'interview",s:60,x:"Demande à quelqu'un (ou enregistre ta propre voix) de te poser une question hors champ. Réponds en le regardant lui, puis refais en regardant la lentille.",p:"C'est le format où tu es déjà bon : la conversation. Compare les deux prises."},
+ {c:"attaque",t:"L'exemple d'abord",s:45,x:"Convaincs-moi d'acheter une pièce en 45 s : un exemple vécu, puis l'idée, puis « parce que ».",p:"L'histoire embarque, le « parce que » fait accepter. L'ordre compte."}
+];
+function moyennes(){
+  const der=etat.seances.slice(-5),m={};
+  for(const k in CRIT){const v=der.map(s=>s.n[k]).filter(x=>x);m[k]=v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+  return m;
+}
+function faible(){const m=moyennes();let best=null;for(const k in m){if(m[k]==null)continue;if(best==null||m[k]<m[best])best=k}return best}
+function choisirDefi(exclure){
+  const f=faible();let pool=DEFIS.map((d,i)=>i).filter(i=>i!==exclure);
+  if(f&&Math.random()<.75){const p2=pool.filter(i=>DEFIS[i].c===f);if(p2.length)pool=p2}
+  const faits=etat.seances.slice(-6).map(s=>s.d);const frais=pool.filter(i=>!faits.includes(i));if(frais.length)pool=frais;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function afficherDefi(){
+  if(etat.defi==null){etat.defi=choisirDefi();sauver()}
+  const d=DEFIS[etat.defi],f=faible();
+  $("#d-crit").textContent=CRIT[d.c].nom+" · "+d.s+" s"+(f===d.c?" · ton point faible du moment":"");
+  $("#d-titre").textContent=d.t;$("#d-consigne").textContent=d.x;$("#d-pourquoi").textContent=d.p;
+}
+$("#b-autre").onclick=()=>{etat.defi=choisirDefi(etat.defi);sauver();afficherDefi();reset()};
+
+let flux=null,rec=null,morceaux=[],blobVid=null,tIv=null,t0=0,notes={};
+function reset(){
+  if(flux){flux.getTracks().forEach(t=>t.stop());flux=null}
+  if(tIv)clearInterval(tIv);
+  $("#ecran").classList.remove("on");$("#r-rec").style.display="none";$("#r-revoir").style.display="none";
+  $("#grille").classList.remove("on");$("#b-filmer").style.display="";notes={};
+}
+function grille(){
+  const box=$("#criteres");box.innerHTML="";notes={};
+  for(const k in CRIT){
+    const d=document.createElement("div");d.className="critere";
+    d.innerHTML=`<b>${CRIT[k].nom}</b><small>${CRIT[k].aide}</small><div class="notes">${["Pas encore","Moyen","Oui"].map((l,i)=>`<button data-k="${k}" data-v="${i+1}">${l}</button>`).join("")}</div>`;
+    box.appendChild(d);
+  }
+  box.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    b.parentNode.querySelectorAll("button").forEach(x=>x.classList.remove("choisi"));b.classList.add("choisi");notes[b.dataset.k]=+b.dataset.v;
+  });
+  $("#grille").classList.add("on");
+}
+$("#b-filmer").onclick=async()=>{
+  const d=DEFIS[etat.defi];
+  try{
+    flux=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:720},height:{ideal:1280}},audio:true});
+  }catch(e){
+    toast("Caméra refusée : filme-toi avec l'appareil photo");
+    $("#b-filmer").style.display="none";grille();return;
+  }
+  const v=$("#vid");v.srcObject=flux;v.muted=true;v.controls=false;v.classList.add("miroir");
+  $("#ecran").classList.add("on");$("#b-filmer").style.display="none";$("#r-rec").style.display="";$("#repere").style.display="";
+  morceaux=[];
+  const mime=["video/mp4","video/webm;codecs=vp9,opus","video/webm"].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m))||"";
+  try{rec=new MediaRecorder(flux,mime?{mimeType:mime}:{})}catch(e){rec=null}
+  if(rec){rec.ondataavailable=e=>e.data.size&&morceaux.push(e.data);rec.onstop=revoir;rec.start()}
+  t0=Date.now();$("#chrono").style.display="flex";
+  tIv=setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);$("#t").textContent=Math.floor(s/60)+":"+String(s%60).padStart(2,"0")+" / "+d.s+" s";if(s>=d.s+15)$("#b-stop").click()},250);
+};
+$("#b-stop").onclick=()=>{
+  clearInterval(tIv);$("#chrono").style.display="none";$("#r-rec").style.display="none";
+  if(rec&&rec.state!=="inactive")rec.stop();else{reset();grille()}
+};
+function revoir(){
+  flux.getTracks().forEach(t=>t.stop());flux=null;
+  blobVid=new Blob(morceaux,{type:rec.mimeType||"video/mp4"});
+  const v=$("#vid");v.srcObject=null;v.src=URL.createObjectURL(blobVid);v.muted=false;v.controls=true;v.classList.remove("miroir");$("#repere").style.display="none";v.play().catch(()=>{});
+  $("#r-revoir").style.display="";grille();
+}
+$("#b-garder").onclick=()=>{
+  if(!blobVid)return;const ext=(blobVid.type.includes("mp4")?"mp4":"webm");
+  const f=new File([blobVid],`eloquence-${auj()}.${ext}`,{type:blobVid.type});
+  if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(()=>{});
+  else{const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;a.click()}
+};
+$("#b-refaire").onclick=()=>{reset();$("#b-filmer").click()};
+$("#b-noter").onclick=()=>{
+  if(Object.keys(notes).length<5){toast("Note les 5 points");return}
+  etat.seances.push({j:auj(),d:etat.defi,n:{...notes}});etat.defi=choisirDefi(etat.defi);sauver();
+  const tot=Object.values(notes).reduce((a,b)=>a+b,0);
+  toast(tot>=13?"Belle séance. Défi suivant prêt pour demain.":"Noté. Le coach vise ton point faible au prochain défi.");
+  reset();afficherDefi();stats();scrollTo({top:$("#coach").offsetTop-20,behavior:"smooth"});
+};
+function serie(){
+  const jours=[...new Set(etat.seances.map(s=>s.j))].sort().reverse();if(!jours.length)return 0;
+  let n=0,d=new Date();if(jours[0]!==auj()){d.setDate(d.getDate()-1)}
+  for(const j of jours){if(j===d.toISOString().slice(0,10)){n++;d.setDate(d.getDate()-1)}else break}
+  return n;
+}
+function stats(){
+  $("#s-n").textContent=etat.seances.length;$("#s-serie").textContent=serie();
+  const m=moyennes(),f=faible(),b=$("#barres");
+  if(!etat.seances.length){b.innerHTML='<p class="vide">Fais ta première séance : les barres apparaissent ici, et le coach choisit le défi suivant selon ton point faible.</p>';return}
+  b.innerHTML=Object.keys(CRIT).map(k=>`<div class="barre ${k===f?"faible":""}"><span>${CRIT[k].nom}</span><i style="--v:0%" data-v="${m[k]==null?0:Math.round((m[k]-1)/2*100)}"></i></div>`).join("");
+  requestAnimationFrame(()=>requestAnimationFrame(()=>b.querySelectorAll("i").forEach(i=>i.style.setProperty("--v",Math.max(4,i.dataset.v)+"%"))));
+}
+$("#b-copier").onclick=()=>{
+  const m=moyennes(),l=etat.seances.slice(-10).map(s=>`${s.j} · ${DEFIS[s.d].t} · `+Object.keys(CRIT).map(k=>CRIT[k].nom+" "+s.n[k]+"/3").join(", "));
+  const txt=`Mon bilan éloquence (${etat.seances.length} séances, ${serie()} jours d'affilée).\nMoyennes des 5 dernières : `+Object.keys(CRIT).map(k=>CRIT[k].nom+" "+(m[k]?m[k].toFixed(1):"-")+"/3").join(", ")+`\nDernières séances :\n`+l.join("\n")+`\nDis-moi en 3 lignes ce que je travaille cette semaine et donne-moi un défi sur mesure.`;
+  navigator.clipboard.writeText(txt).then(()=>toast("Copié. Colle-le à Claude."),()=>toast("Copie impossible ici"));
+};
+
+/* 4. jeu */
+const JEU=[
+ {a:"Ta nervosité se voit beaucoup moins que tu le crois.",r:"prouve",e:"Effet projecteur et illusion de transparence : on surestime ce que les autres perçoivent. Le savoir améliore les discours (Savitsky & Gilovich 2003)."},
+ {a:"93 % de la communication passe par le non-verbal.",r:"mythe",e:"Le 7/38/55 de Mehrabian portait sur des mots isolés exprimant un sentiment en contradiction avec le ton. Pas sur un discours."},
+ {a:"Se dire « je suis excité » marche mieux que « je suis calme ».",r:"prouve",e:"Brooks 2014 : les orateurs qui renommaient leur stress en excitation étaient jugés plus convaincants et plus confiants."},
+ {a:"2 minutes de posture de pouvoir augmentent ta testostérone.",r:"mythe",e:"L'effet hormonal ne s'est pas reproduit (Ranehill 2015) et une des autrices s'en est distanciée."},
+ {a:"Bloquer ses mains rend plus posé à l'oral.",r:"mythe",e:"C'est l'inverse : empêcher les gestes augmente les hésitations (Rauscher, Krauss & Chen 1996). Les gestes aident à trouver les mots."},
+ {a:"Regarder ailleurs quand tu réfléchis te fait paraître moins sûr.",r:"mythe",e:"Détourner les yeux aide le cerveau à penser (Glenberg 1998). Ce qui compte : revenir dans les yeux pour la phrase clé."},
+ {a:"Poser des questions de relance rend plus sympathique.",r:"prouve",e:"Huang et al. 2017 : plus de questions, surtout de relance, = plus apprécié, notamment dans des rendez-vous rapides."},
+ {a:"Une raison, même faible, fait accepter une demande plus souvent.",r:"prouve",e:"Langer 1978 : « parce que je dois faire des copies » a fait passer bien plus de gens devant la photocopieuse."}
+];
+let ji=0,jres=[];
+function jeuAff(){
+  const prog=$("#j-prog");prog.innerHTML=JEU.map((_,i)=>`<i class="${jres[i]==null?"":jres[i]?"ok":"ko"}"></i>`).join("");
+  if(ji>=JEU.length){
+    const n=jres.filter(Boolean).length;$("#j-num").textContent="Fini";
+    $("#j-aff").textContent=n+" sur "+JEU.length+(n>=7?". Tu sais trier le vrai du folklore.":". Relis les mythes dans le guide, ils reviennent partout sur les réseaux.");
+    $("#j-choix").innerHTML='<button class="bouton verre-btn" id="j-re">Rejouer</button>';$("#j-re").onclick=()=>{ji=0;jres=[];$("#j-choix").innerHTML='<button class="bouton verre-btn" data-r="prouve">Prouvé</button><button class="bouton verre-btn" data-r="mythe">Mythe</button>';brancher();jeuAff()};
+    $("#j-exp").classList.remove("on");etat.jeu.meilleur=Math.max(etat.jeu.meilleur||0,n);sauver();return;
+  }
+  $("#j-num").textContent=(ji+1)+" / "+JEU.length;$("#j-aff").textContent=JEU[ji].a;$("#j-exp").classList.remove("on");
+  document.querySelectorAll("#j-choix .bouton").forEach(b=>{b.disabled=false;b.classList.remove("bon")});
+}
+function brancher(){
+  document.querySelectorAll("#j-choix .bouton").forEach(b=>b.onclick=()=>{
+    if(b.disabled)return;const q=JEU[ji],ok=b.dataset.r===q.r;jres[ji]=ok;
+    document.querySelectorAll("#j-choix .bouton").forEach(x=>{x.disabled=true;if(x.dataset.r===q.r)x.classList.add("bon")});
+    setTimeout(()=>{$("#j-exp").innerHTML=`<span class="verdict">${ok?"Exact.":"Non."} ${q.r==="prouve"?"Prouvé.":"Mythe."}</span> ${q.e}`;$("#j-exp").classList.add("on");
+      const p=$("#j-prog").children[ji];if(p)p.className=ok?"ok":"ko";
+      const s=document.createElement("button");s.className="bouton";s.textContent=ji<JEU.length-1?"Suivante":"Voir mon score";s.style.marginTop="14px";s.onclick=()=>{ji++;jeuAff()};$("#j-exp").appendChild(document.createElement("br"));$("#j-exp").appendChild(s)},550);
+  });
+}
+brancher();jeuAff();afficherDefi();stats();
+</script>
+</body>
+
+</html>
